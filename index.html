@@ -73,7 +73,7 @@
 .orch-stats{grid-template-columns:1fr 1fr}
 .form-row{grid-template-columns:1fr}
 }
-#view-command{background:radial-gradient(ellipse at top,#132028 0%,#0a141a 70%);color:#cfe3cf;padding:14px 16px;display:none;flex-direction:column;overflow:hidden;font-family:inherit;min-height:calc(100vh - 110px);border-radius:10px;margin:-10px 0}
+#view-command{background:#0d1820 radial-gradient(ellipse at top,#1a2d38,#0a141a 70%) no-repeat;color:#cfe3cf;padding:14px 16px;display:none;flex-direction:column;overflow:hidden;font-family:inherit;min-height:calc(100vh - 110px);border-radius:10px;margin:-10px 0;animation:none!important;opacity:1!important}
 #view-command.active{display:flex}
 .cmd-header{display:flex;align-items:center;gap:18px;padding:6px 10px 12px;border-bottom:1px solid rgba(168,185,86,0.2)}
 .cmd-title{font-size:22px;font-weight:700;background:linear-gradient(90deg,#c8dc7a,#a8b956,#6b8e23);-webkit-background-clip:text;color:transparent;letter-spacing:2px}
@@ -120,15 +120,22 @@
 .cmd-stream{background:rgba(0,0,0,0.35);border:1px solid rgba(168,185,86,0.2);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;overflow:hidden}
 .cmd-stream-hdr{font-size:12px;font-weight:700;color:#a8b956;padding-bottom:6px;border-bottom:1px solid rgba(168,185,86,0.15);letter-spacing:1px;display:flex;align-items:center;gap:6px}
 .cmd-stream-hdr::before{content:'●';color:#6b8e23;animation:cmd-blink 1.4s infinite}
-.cmd-stream-list{flex:1;overflow:hidden;font-size:12px;margin-top:6px;display:flex;flex-direction:column-reverse}
+.cmd-stream-list{flex:1;overflow-y:auto;overflow-x:hidden;font-size:12px;margin-top:6px;display:flex;flex-direction:column}
 .cmd-stream-item{padding:5px 0;border-bottom:1px dashed rgba(168,185,86,0.08);opacity:0;animation:cmd-fade 0.5s forwards;display:flex;gap:6px;align-items:baseline;font-family:'Courier New',monospace}
 @keyframes cmd-fade{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
 .cmd-stream-time{color:#6b8e23;font-size:10px;min-width:40px}
-.cmd-stream-type{font-size:10px;padding:1px 6px;border-radius:8px;letter-spacing:0.5px}
+.cmd-stream-type{font-size:10px;padding:1px 6px;border-radius:8px;letter-spacing:0.5px;font-weight:600}
+.cmd-stream-type.t-trigger{background:rgba(200,169,81,0.18);color:#e5c56a}
+.cmd-stream-type.t-execute{background:rgba(107,142,35,0.18);color:#8ebc3a}
+.cmd-stream-type.t-notify{background:rgba(122,188,200,0.18);color:#7abcc8}
+.cmd-stream-type.t-record{background:rgba(168,160,200,0.15);color:#a8a0c8}
+.cmd-stream-type.t-sync{background:rgba(168,185,86,0.18);color:#c8dc7a}
 .cmd-stream-type.t-flow{background:rgba(168,185,86,0.15);color:#c8dc7a}
-.cmd-stream-type.t-alert{background:rgba(199,80,80,0.15);color:#e08080}
+.cmd-stream-type.t-alert{background:rgba(199,80,80,0.18);color:#e08080}
 .cmd-stream-type.t-ok{background:rgba(107,142,35,0.15);color:#8ebc3a}
 .cmd-stream-type.t-info{background:rgba(196,149,106,0.15);color:#d8a87a}
+.cmd-scene-banner{padding:6px 8px;margin:6px 0 2px;border-left:3px solid #c8dc7a;background:linear-gradient(90deg,rgba(168,185,86,0.18),rgba(168,185,86,0));font-size:11px;color:#c8dc7a;letter-spacing:1px;font-weight:600;animation:cmd-fade 0.5s forwards;opacity:0}
+.cmd-stream-item.chained{padding-left:14px;border-left:2px solid rgba(168,185,86,0.25);margin-left:2px}
 .cmd-stream-text{flex:1;color:#cfe3cf;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cmd-heatmap{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;padding-top:10px;border-top:1px solid rgba(168,185,86,0.2)}
 .cmd-heat-cell{padding:8px 10px;background:linear-gradient(145deg,rgba(168,185,86,0.06),rgba(168,185,86,0.02));border:1px solid rgba(168,185,86,0.2);border-radius:6px}
@@ -192,130 +199,237 @@ const CMD_SRCS=[{id:'PMS',x:40,y:130},{id:'IoT',x:40,y:260},{id:'POS',x:40,y:390
 const CMD_SRC_EDGES=[['PMS','front-desk'],['IoT','housekeeper'],['POS','finance']];
 const CMD_OUT=[{id:'企微',x:960,y:130},{id:'报表',x:960,y:260},{id:'客户',x:960,y:390}];
 const CMD_OUT_EDGES=[['quality','企微'],['gm','报表'],['mkt','客户']];
-const CMD_EVENTS=[
-{t:'flow',from:'PMS',to:'front-desk',txt:'携程订单 R2856 推送到前台',ic:'📥→🏪'},
-{t:'flow',from:'front-desk',to:'concierge',txt:'VIP张先生入住 同步画像',ic:'🏪→🧠'},
-{t:'ok',from:'front-desk',to:'housekeeper',txt:'1208房VIP备房完成',ic:'🏪→🏠'},
-{t:'flow',from:'concierge',to:'housekeeper',txt:'偏好同步：荞麦枕+依云+22°C',ic:'🧠→🏠'},
-{t:'info',from:'front-desk',to:'企微',txt:'身份证OCR核验 99.2% 通过',ic:'🪪→✅'},
-{t:'flow',from:'front-desk',to:'finance',txt:'信用卡预授权 ¥2,400',ic:'💳→🛡'},
-{t:'ok',from:'front-desk',to:'housekeeper',txt:'电子房卡已下发 1208',ic:'🔑→🏠'},
-{t:'info',from:'PMS',to:'front-desk',txt:'赵女士申请延迟退房至14:00',ic:'⏰→🏪'},
-{t:'flow',from:'front-desk',to:'finance',txt:'李女士退房结算 ¥2,646',ic:'🚪→🛡'},
-{t:'ok',from:'front-desk',to:'finance',txt:'开具发票 #FP-8821',ic:'🧾→🛡'},
-{t:'alert',from:'IoT',to:'housekeeper',txt:'0612房空调28°C异常偏高',ic:'🌡→🏠'},
-{t:'alert',from:'housekeeper',to:'eng',txt:'创建维修工单 #MT-2847',ic:'🏠→🔧'},
-{t:'flow',from:'eng',to:'supply',txt:'申领大金冷媒补充罐x2',ic:'🔧→📦'},
-{t:'ok',from:'eng',to:'housekeeper',txt:'0612空调维修完成 降至24°C',ic:'🔧→🏠'},
-{t:'flow',from:'IoT',to:'housekeeper',txt:'1506房语音"开窗帘"',ic:'🗣→🏠'},
-{t:'flow',from:'IoT',to:'housekeeper',txt:'0906房门锁开启异常×2',ic:'🔐→🏠'},
-{t:'alert',from:'IoT',to:'eng',txt:'下浩里店电梯B震动异常',ic:'🛗→🔧'},
-{t:'info',from:'IoT',to:'housekeeper',txt:'2108客人按响呼叫铃',ic:'🔔→🏠'},
-{t:'alert',from:'IoT',to:'quality',txt:'大堂人员滞留超45分钟',ic:'📹→✅'},
-{t:'ok',from:'quality',to:'front-desk',txt:'已确认为等候访客',ic:'✅→🏪'},
+const CMD_CHAINS=[
+{scene:'🏨 VIP张总入住（携程R2856）',steps:[
+{t:'trigger',from:'PMS',to:'front-desk',txt:'📥 携程订单R2856 VIP金卡入住',ic:'📥→🏪'},
+{t:'sync',from:'front-desk',to:'concierge',txt:'识别12次入住 同步偏好（荞麦枕/22°C/依云）',ic:'🏪→🧠'},
+{t:'execute',from:'concierge',to:'housekeeper',txt:'下达1208 VIP备房指令',ic:'🧠→🏠'},
+{t:'execute',from:'housekeeper',to:'supply',txt:'申领荞麦枕+依云x4+儿童套装',ic:'🏠→📦'},
+{t:'execute',from:'front-desk',to:'finance',txt:'信用卡预授权 ¥2,400',ic:'💳→🛡'},
+{t:'notify',from:'housekeeper',to:'front-desk',txt:'VIP备房完成 可办理入住',ic:'🏠→🏪'},
+{t:'record',from:'concierge',to:'mkt',txt:'VIP礼遇+亲子下午茶券推送',ic:'🧠→📢'}
+]},
+{scene:'☎ 1208房来电：房里没茶包',steps:[
+{t:'trigger',from:'IoT',to:'front-desk',txt:'📞 1208来电转接：房里没有茶包',ic:'☎→🏪'},
+{t:'execute',from:'front-desk',to:'housekeeper',txt:'派工单给3F清洁员小王',ic:'🏪→🏠'},
+{t:'execute',from:'housekeeper',to:'IoT',txt:'2分钟送达菊花茶+红茶各2包',ic:'🏠→🛎'},
+{t:'sync',from:'housekeeper',to:'concierge',txt:'画像新增标签"偏好菊花茶"',ic:'🏠→🧠'},
+{t:'record',from:'housekeeper',to:'supply',txt:'库存台账-4包 触发自动补货',ic:'🏠→📦'},
+{t:'record',from:'quality',to:'gm',txt:'服务响应台账 2分钟 达标',ic:'✅→👔'}
+]},
+{scene:'☎ 0906房来电：枕头太软',steps:[
+{t:'trigger',from:'IoT',to:'housekeeper',txt:'📞 0906来电：枕头太软 要硬一些',ic:'☎→🏠'},
+{t:'execute',from:'housekeeper',to:'supply',txt:'布草间取荞麦硬枕x1',ic:'🏠→📦'},
+{t:'execute',from:'housekeeper',to:'IoT',txt:'3分钟完成更换',ic:'🏠→🛎'},
+{t:'sync',from:'housekeeper',to:'concierge',txt:'画像永久标签"偏好硬枕"',ic:'🏠→🧠'},
+{t:'record',from:'concierge',to:'PMS',txt:'预订规则：下次自动配硬枕',ic:'🧠→📥'}
+]},
+{scene:'☎ 1506来电：手机不会连WiFi',steps:[
+{t:'trigger',from:'IoT',to:'front-desk',txt:'📞 1506来电：手机不知道怎么连WiFi',ic:'☎→🏪'},
+{t:'execute',from:'front-desk',to:'eng',txt:'后台查15F AP 正常在线',ic:'🏪→🔧'},
+{t:'notify',from:'front-desk',to:'IoT',txt:'电话指导连SU-HOTEL-5G/密码=入住日期',ic:'🏪→📶'},
+{t:'record',from:'front-desk',to:'IoT',txt:'手机号加入免登白名单',ic:'🏪→📶'},
+{t:'record',from:'quality',to:'gm',txt:'电话服务记录 耗时1分40秒',ic:'✅→👔'}
+]},
+{scene:'🌡 0612房空调28°C → 紧急维修',steps:[
+{t:'trigger',from:'IoT',to:'housekeeper',txt:'🌡 0612房实测28°C 设定24°C',ic:'🌡→🏠'},
+{t:'execute',from:'housekeeper',to:'eng',txt:'创建维修工单 #MT-2847',ic:'🏠→🔧'},
+{t:'execute',from:'eng',to:'supply',txt:'申领冷媒罐+检测仪',ic:'🔧→📦'},
+{t:'execute',from:'housekeeper',to:'IoT',txt:'先送移动风扇到0612救急',ic:'🏠→🛎'},
+{t:'notify',from:'front-desk',to:'IoT',txt:'短信通知赵女士维修进度',ic:'🏪→📱'},
+{t:'execute',from:'eng',to:'housekeeper',txt:'冷媒补充完成 降至24°C',ic:'🔧→🏠'},
+{t:'execute',from:'quality',to:'mkt',txt:'赠送¥200券安抚客人',ic:'✅→📢'},
+{t:'record',from:'eng',to:'supply',txt:'6F VRV批量排查计划入库',ic:'🔧→📦'}
+]},
+{scene:'🚨 1712房漏水 → 紧急换房',steps:[
+{t:'trigger',from:'IoT',to:'housekeeper',txt:'📞 1712来电：拉开窗帘发现漏水',ic:'☎→🏠'},
+{t:'execute',from:'housekeeper',to:'eng',txt:'工单#MT-2912 加急 楼上渗水',ic:'🏠→🔧'},
+{t:'execute',from:'housekeeper',to:'front-desk',txt:'1718同级房可用 协助换房',ic:'🏠→🏪'},
+{t:'execute',from:'front-desk',to:'IoT',txt:'1712→1718 行李员搬运',ic:'🏪→🛎'},
+{t:'notify',from:'mkt',to:'客户',txt:'赠送¥200券+次日早餐免费',ic:'📢→☔'},
+{t:'record',from:'quality',to:'gm',txt:'事件#P1203 SOP响应12分钟',ic:'✅→👔'}
+]},
+{scene:'📱 携程竞对跳水 → 动态调价',steps:[
+{t:'trigger',from:'ota',to:'revenue',txt:'📱 携程维也纳¥539 比本店低¥50',ic:'📱→💹'},
+{t:'sync',from:'revenue',to:'gm',txt:'本店OCC 78% 剩42间 请示策略',ic:'💹→👔'},
+{t:'notify',from:'gm',to:'revenue',txt:'批准小幅调¥20+打包早餐',ic:'👔→💹'},
+{t:'execute',from:'revenue',to:'ota',txt:'携程¥589→¥569 同步美团飞猪',ic:'💹→📱'},
+{t:'execute',from:'mkt',to:'客户',txt:'上线"双早+1"打包卡片',ic:'📢→📱'},
+{t:'record',from:'finance',to:'报表',txt:'定价日志 预计影响+¥2,100/天',ic:'🛡→📊'}
+]},
+{scene:'💬 美团3星差评"早餐品种少"',steps:[
+{t:'trigger',from:'ota',to:'quality',txt:'💬 美团差评 NLP情感分析',ic:'📱→✅'},
+{t:'sync',from:'quality',to:'supply',txt:'近30天12条相似评价 列整改',ic:'✅→📦'},
+{t:'execute',from:'quality',to:'ota',txt:'AI生成个性化真诚致歉回复',ic:'✅→📱'},
+{t:'execute',from:'supply',to:'POS',txt:'增加果汁类+面包品类计划',ic:'📦→🍳'},
+{t:'notify',from:'quality',to:'gm',txt:'48h后安排电话回访',ic:'✅→👔'},
+{t:'record',from:'gm',to:'报表',txt:'差评整改 纳入周质量报告',ic:'👔→📊'}
+]},
+{scene:'🎂 23位会员生日触达',steps:[
+{t:'trigger',from:'mkt',to:'concierge',txt:'⏰ CRM推送 23位今日生日',ic:'⏰→🧠'},
+{t:'sync',from:'mkt',to:'concierge',txt:'画像分层：3VIP/8活跃/12沉睡',ic:'📢→🧠'},
+{t:'notify',from:'mkt',to:'客户',txt:'12位沉睡会员 ¥100唤醒券',ic:'📢→👥'},
+{t:'notify',from:'mkt',to:'客户',txt:'8位活跃会员 8折专属券',ic:'📢→👥'},
+{t:'execute',from:'mkt',to:'housekeeper',txt:'VIP张总(1208) 生日蛋糕布置',ic:'📢→🏠'},
+{t:'notify',from:'housekeeper',to:'mkt',txt:'蛋糕+贺卡已就位',ic:'🏠→📢'},
+{t:'record',from:'mkt',to:'报表',txt:'营销触达台账 预算¥1,840',ic:'📢→📊'}
+]},
+{scene:'☎ 1809投诉：隔壁太吵',steps:[
+{t:'trigger',from:'IoT',to:'front-desk',txt:'📞 1809投诉：隔壁声音很大',ic:'☎→🏪'},
+{t:'execute',from:'front-desk',to:'housekeeper',txt:'派员上门礼貌沟通1807',ic:'🏪→🏠'},
+{t:'execute',from:'mkt',to:'客户',txt:'1809赠送水果盘+耳塞',ic:'📢→🍎'},
+{t:'notify',from:'housekeeper',to:'front-desk',txt:'1807已降音量 双方满意',ic:'🏠→🏪'},
+{t:'sync',from:'concierge',to:'PMS',txt:'1809画像标签"安静偏好"',ic:'🧠→📥'},
+{t:'record',from:'quality',to:'gm',txt:'投诉#P1208 解决时效7分钟',ic:'✅→👔'}
+]},
+{scene:'💬 抖音咨询：端午3晚连住',steps:[
+{t:'trigger',from:'online-cs',to:'revenue',txt:'💬 抖音私信：端午可以连住3晚吗',ic:'💬→💹'},
+{t:'sync',from:'revenue',to:'ota',txt:'查端午房态 预测OCC 92%',ic:'💹→📱'},
+{t:'notify',from:'revenue',to:'online-cs',txt:'3晚8.5折¥1,584+欢迎果盘',ic:'💹→💬'},
+{t:'execute',from:'online-cs',to:'PMS',txt:'客人确认 锁定1508',ic:'💬→📥'},
+{t:'sync',from:'concierge',to:'mkt',txt:'新客画像创建+婚纪标签',ic:'🧠→📢'},
+{t:'record',from:'finance',to:'报表',txt:'营收+¥1,584 直销零佣金',ic:'🛡→📊'}
+]},
+{scene:'🚨 下浩里店2F烟感告警',steps:[
+{t:'trigger',from:'IoT',to:'eng',txt:'🚨 2F走廊烟感触发告警',ic:'🚨→🔧'},
+{t:'execute',from:'eng',to:'housekeeper',txt:'派员现场核实+通知安保',ic:'🔧→🏠'},
+{t:'notify',from:'housekeeper',to:'front-desk',txt:'查2F在住客人 暂无异常反馈',ic:'🏠→🏪'},
+{t:'execute',from:'eng',to:'IoT',txt:'确认蒸汽误报 烟感复位',ic:'🔧→🚨'},
+{t:'record',from:'quality',to:'gm',txt:'事件归档+建议1个月后演练',ic:'✅→👔'}
+]},
+{scene:'🌙 凌晨02:00 自动夜审',steps:[
+{t:'trigger',from:'PMS',to:'front-desk',txt:'⏰ 夜审定时任务触发',ic:'⏰→🏪'},
+{t:'sync',from:'front-desk',to:'finance',txt:'核对218笔交易 总¥128,456',ic:'🏪→🛡'},
+{t:'notify',from:'finance',to:'gm',txt:'标记0612预授权超48h异常',ic:'🛡→👔'},
+{t:'execute',from:'front-desk',to:'finance',txt:'冻结当日账目 差异¥0',ic:'🏪→🛡'},
+{t:'record',from:'gm',to:'报表',txt:'夜审报告推送店长+财务',ic:'👔→📊'}
+]},
+{scene:'🍳 早餐备料AI预测',steps:[
+{t:'trigger',from:'POS',to:'supply',txt:'⏰ 昨日流水+天气+预订 推入模型',ic:'🍳→📦'},
+{t:'sync',from:'supply',to:'POS',txt:'预测明日120份(+15%)',ic:'📦→🍳'},
+{t:'execute',from:'supply',to:'finance',txt:'采购订单¥860 提交审批',ic:'📦→🛡'},
+{t:'notify',from:'finance',to:'supply',txt:'审批通过 通知B家配送',ic:'🛡→📦'},
+{t:'record',from:'supply',to:'housekeeper',txt:'厨房排班+1早班',ic:'📦→🏠'}
+]},
+{scene:'⭐ 月度供应商评估',steps:[
+{t:'trigger',from:'supply',to:'finance',txt:'⏰ 读取12家供应商30天记录',ic:'📦→🛡'},
+{t:'notify',from:'supply',to:'gm',txt:'C家生鲜 2次延迟+1次不合格',ic:'📦→👔'},
+{t:'execute',from:'supply',to:'POS',txt:'D家升级为生鲜主供',ic:'📦→🍳'},
+{t:'execute',from:'finance',to:'supply',txt:'签约调整 付款条件同步',ic:'🛡→📦'},
+{t:'record',from:'quality',to:'报表',txt:'供应链风险报告生成',ic:'✅→📊'}
+]},
+{scene:'🛗 电梯B震动异常 → 预防维护',steps:[
+{t:'trigger',from:'IoT',to:'eng',txt:'🛗 下浩里电梯B 振动频谱异常',ic:'🛗→🔧'},
+{t:'sync',from:'eng',to:'supply',txt:'查历史 上次保养45天前',ic:'🔧→📦'},
+{t:'execute',from:'eng',to:'front-desk',txt:'电梯B暂停+引导用电梯A',ic:'🔧→🏪'},
+{t:'execute',from:'eng',to:'IoT',txt:'调紧钢丝绳+润滑 振动正常',ic:'🔧→🛗'},
+{t:'record',from:'eng',to:'finance',txt:'季度保养成本+¥800',ic:'🔧→🛡'},
+{t:'record',from:'quality',to:'gm',txt:'无客人投诉 SOP执行100%',ic:'✅→👔'}
+]},
+{scene:'💰 能耗异常 → 根因定位',steps:[
+{t:'trigger',from:'finance',to:'gm',txt:'💰 下浩里空调能耗环比+18%',ic:'🛡→👔'},
+{t:'sync',from:'gm',to:'eng',txt:'分时数据分析 定位3F夜间异常',ic:'👔→🔧'},
+{t:'notify',from:'eng',to:'supply',txt:'3F中央空调控制阀故障 需备件',ic:'🔧→📦'},
+{t:'execute',from:'supply',to:'finance',txt:'控制阀¥1,200 紧急采购',ic:'📦→🛡'},
+{t:'execute',from:'eng',to:'IoT',txt:'更换完成 夜间能耗回归基线',ic:'🔧→🛗'},
+{t:'record',from:'gm',to:'报表',txt:'节能收益 月省¥4,200',ic:'👔→📊'}
+]},
+{scene:'🐕 电话咨询：带宠物入住',steps:[
+{t:'trigger',from:'online-cs',to:'front-desk',txt:'☎ 电话咨询：可以带金毛吗',ic:'☎→🏪'},
+{t:'sync',from:'front-desk',to:'housekeeper',txt:'查1-3F宠物友好房 3间可用',ic:'🏪→🏠'},
+{t:'notify',from:'front-desk',to:'online-cs',txt:'可入 ¥300押金+宠物垫免费',ic:'🏪→💬'},
+{t:'sync',from:'concierge',to:'PMS',txt:'画像"携宠出行" 后续推荐',ic:'🧠→📥'},
+{t:'record',from:'finance',to:'gm',txt:'宠物房本月已接20单',ic:'🛡→👔'}
+]},
+{scene:'👶 电话咨询：儿童加床',steps:[
+{t:'trigger',from:'online-cs',to:'front-desk',txt:'☎ 电话咨询：儿童需要加床吗',ic:'☎→🏪'},
+{t:'notify',from:'front-desk',to:'online-cs',txt:'12岁以下免费 13+加¥120',ic:'🏪→💬'},
+{t:'execute',from:'front-desk',to:'housekeeper',txt:'预置儿童拖鞋+漱口杯',ic:'🏪→🏠'},
+{t:'sync',from:'concierge',to:'mkt',txt:'亲子标签 推送亲子套餐',ic:'🧠→📢'}
+]},
+{scene:'⛈ 暴雨预警 → 雨夜应急',steps:[
+{t:'trigger',from:'gm',to:'mkt',txt:'⛈ 暴雨预警 OCC偏离-8%',ic:'👔→📢'},
+{t:'execute',from:'mkt',to:'revenue',txt:'设计"雨夜安心住"限时调价',ic:'📢→💹'},
+{t:'execute',from:'revenue',to:'ota',txt:'携程美团上线限时¥459',ic:'💹→📱'},
+{t:'notify',from:'mkt',to:'客户',txt:'朋友圈+抖音+小红书投放',ic:'📢→📱'},
+{t:'notify',from:'online-cs',to:'front-desk',txt:'话术推送 免费接送+姜茶',ic:'💬→🏪'},
+{t:'record',from:'gm',to:'报表',txt:'2h成交17间 +¥10,013',ic:'👔→📊'},
+{t:'record',from:'mkt',to:'报表',txt:'活动ROI 1:8.3',ic:'📢→📊'}
+]},
+{scene:'🚪 李女士退房 → 全链结算',steps:[
+{t:'trigger',from:'front-desk',to:'finance',txt:'🚪 0815退房申请 结算账单',ic:'🚪→🛡'},
+{t:'sync',from:'housekeeper',to:'finance',txt:'minibar消耗¥86 录入',ic:'🏠→🛡'},
+{t:'execute',from:'finance',to:'front-desk',txt:'总计¥2,646 预授权释放',ic:'🛡→💳'},
+{t:'notify',from:'front-desk',to:'IoT',txt:'电子发票+满意度链接推送',ic:'🏪→📱'},
+{t:'execute',from:'housekeeper',to:'supply',txt:'清洁派单+消耗品补充',ic:'🏠→📦'},
+{t:'notify',from:'mkt',to:'客户',txt:'次日发"期待再见"短信+券',ic:'📢→💬'}
+]},
+{scene:'🔔 1208呼叫铃 → 服务联动',steps:[
+{t:'trigger',from:'IoT',to:'housekeeper',txt:'🔔 1208房按响呼叫铃',ic:'🔔→🏠'},
+{t:'sync',from:'housekeeper',to:'front-desk',txt:'识别需求：加热水+送水果',ic:'🏠→🏪'},
+{t:'execute',from:'housekeeper',to:'IoT',txt:'2分钟内完成派送',ic:'🏠→🛎'},
+{t:'record',from:'concierge',to:'PMS',txt:'画像补充"爱吃芒果"',ic:'🧠→📥'}
+]},
+{scene:'💧 瓶装水日常消耗 → 自动补货',steps:[
+{t:'trigger',from:'IoT',to:'housekeeper',txt:'⏰ 22:00 minibar系统盘点：全店瓶装水库存380箱',ic:'💧→🏠'},
+{t:'sync',from:'housekeeper',to:'supply',txt:'今日消耗 68瓶(+15%)／日均62瓶 周末增',ic:'🏠→📦'},
+{t:'notify',from:'supply',to:'gm',txt:'测算余量5.6天 低于7天安全线',ic:'📦→👔'},
+{t:'execute',from:'supply',to:'finance',txt:'生成采购单 农夫山泉800瓶+依云120瓶 ¥3,240',ic:'📦→🛡'},
+{t:'execute',from:'finance',to:'supply',txt:'付款审批通过 下单B家',ic:'🛡→📦'},
+{t:'notify',from:'supply',to:'housekeeper',txt:'周三上午到货 通知布草间收货',ic:'📦→🏠'},
+{t:'record',from:'supply',to:'报表',txt:'饮品台账月度同比+18%',ic:'📦→📊'}
+]},
+{scene:'🪥 牙刷牙膏日常轮换',steps:[
+{t:'trigger',from:'housekeeper',to:'supply',txt:'⏰ 清洁完成盘点 0815/0906/1208消耗牙具',ic:'🧹→📦'},
+{t:'sync',from:'supply',to:'housekeeper',txt:'洗漱包库存380套 环比正常 日消耗~68套',ic:'📦→🏠'},
+{t:'notify',from:'supply',to:'gm',txt:'余量5.6天 下周入住率+12% 建议补货',ic:'📦→👔'},
+{t:'execute',from:'supply',to:'finance',txt:'采购800套 B家¥5.2单价 ¥4,160',ic:'📦→🛡'},
+{t:'execute',from:'finance',to:'supply',txt:'审批通过 3天到货',ic:'🛡→📦'},
+{t:'record',from:'quality',to:'gm',txt:'易耗品周报：环保客x12 少送牙具',ic:'✅→👔'}
+]},
+{scene:'🧺 布草送洗日清链',steps:[
+{t:'trigger',from:'housekeeper',to:'supply',txt:'⏰ 10:30 布草间盘点 脏床单92套 毛巾156条',ic:'🧺→📦'},
+{t:'execute',from:'supply',to:'POS',txt:'打包批次#LN-221 通知A洗涤厂来取',ic:'📦→🚚'},
+{t:'notify',from:'supply',to:'finance',txt:'月度结算预估¥8,420',ic:'📦→🛡'},
+{t:'execute',from:'housekeeper',to:'supply',txt:'发放干净床单120套/毛巾180条上楼备用',ic:'🏠→📦'},
+{t:'record',from:'supply',to:'gm',txt:'布草损耗率0.8% 低于行业',ic:'📦→👔'}
+]},
+{scene:'🥬 生鲜食材冷链日配',steps:[
+{t:'trigger',from:'POS',to:'supply',txt:'⏰ 07:00 D家生鲜车到达 23单温控合格',ic:'🚚→📦'},
+{t:'execute',from:'supply',to:'POS',txt:'按早午晚餐需求分拣入冻库',ic:'📦→🍳'},
+{t:'sync',from:'supply',to:'finance',txt:'本次到货¥3,280 T+3结算',ic:'📦→🛡'},
+{t:'notify',from:'quality',to:'supply',txt:'抽检牛排批次温度合格记录',ic:'✅→📦'},
+{t:'record',from:'supply',to:'报表',txt:'冷链台账 本月损耗率1.2%',ic:'📦→📊'}
+]},
+{scene:'🧻 客房易耗品末位巡检',steps:[
+{t:'trigger',from:'housekeeper',to:'supply',txt:'⏰ 23:30 每层楼布草间自动盘点',ic:'🧹→📦'},
+{t:'sync',from:'supply',to:'housekeeper',txt:'卷纸剩124筒/湿巾剩80盒',ic:'📦→🏠'},
+{t:'notify',from:'supply',to:'gm',txt:'湿巾剩2.3天 急需采购',ic:'📦→👔'},
+{t:'execute',from:'supply',to:'finance',txt:'紧急采购200盒 次日达 ¥760',ic:'📦→🛡'},
+{t:'record',from:'supply',to:'报表',txt:'易耗品轮换周报生成',ic:'📦→📊'}
+]}
+];
+var CMD_AMBIENT=[
+{t:'flow',from:'PMS',to:'front-desk',txt:'新订单 R2891 推送',ic:'📥→🏪'},
+{t:'info',from:'IoT',to:'housekeeper',txt:'1606语音"关灯睡觉"',ic:'🗣→🏠'},
+{t:'info',from:'IoT',to:'housekeeper',txt:'2015语音"窗帘打开"',ic:'🗣→🏠'},
+{t:'flow',from:'ota',to:'revenue',txt:'美团新订单 x1 大床房',ic:'📱→💹'},
+{t:'info',from:'POS',to:'finance',txt:'餐厅午餐流水 ¥5,680',ic:'🍳→🛡'},
+{t:'ok',from:'housekeeper',to:'front-desk',txt:'0612清洁完成 转售状态',ic:'🧹→🏪'},
 {t:'flow',from:'IoT',to:'housekeeper',txt:'3F新风滤芯寿命剩15%',ic:'🍃→🏠'},
-{t:'alert',from:'IoT',to:'eng',txt:'下浩里店2F烟感告警',ic:'🚨→🔧'},
-{t:'ok',from:'eng',to:'IoT',txt:'烟感误报 已复位',ic:'🔧→🚨'},
-{t:'flow',from:'housekeeper',to:'front-desk',txt:'0815房清洁完成 转售状态',ic:'🧹→🏪'},
-{t:'info',from:'housekeeper',to:'front-desk',txt:'1208 minibar消耗 ¥86',ic:'🥤→🏪'},
-{t:'flow',from:'housekeeper',to:'supply',txt:'布草送洗批次 #LN-220',ic:'🧺→📦'},
-{t:'flow',from:'POS',to:'finance',txt:'早餐时段流水 ¥8,420',ic:'🍳→🛡'},
-{t:'flow',from:'POS',to:'supply',txt:'明日备料需求已推送',ic:'🍳→📦'},
-{t:'info',from:'online-cs',to:'front-desk',txt:'0906客人要求房内下午茶',ic:'☕→🏪'},
-{t:'flow',from:'ota',to:'revenue',txt:'携程新订单 x3 江景房',ic:'📱→💹'},
-{t:'flow',from:'ota',to:'revenue',txt:'美团新订单 x2 大床房',ic:'📱→💹'},
-{t:'alert',from:'ota',to:'revenue',txt:'携程维也纳 ¥539 跳水预警',ic:'📱→💹'},
-{t:'ok',from:'revenue',to:'ota',txt:'动态调价 ¥589→¥569+双早',ic:'💹→📱'},
-{t:'flow',from:'ota',to:'quality',txt:'美团新3星差评"早餐品种少"',ic:'📱→✅'},
-{t:'ok',from:'quality',to:'ota',txt:'差评已AI个性化回复',ic:'✅→📱'},
-{t:'flow',from:'online-cs',to:'mkt',txt:'高意向客户 3位 标记',ic:'💬→📢'},
-{t:'flow',from:'online-cs',to:'revenue',txt:'抖音闪购退款特批',ic:'💬→💹'},
-{t:'ok',from:'revenue',to:'online-cs',txt:'特批通过 已退款¥459',ic:'💹→💬'},
-{t:'info',from:'online-cs',to:'concierge',txt:'客户偏好"靠电梯远"已记',ic:'💬→🧠'},
-{t:'flow',from:'revenue',to:'gm',txt:'江景房今晚提价 ¥40',ic:'💹→👔'},
-{t:'ok',from:'revenue',to:'gm',txt:'今晚OCC预测 82.5%',ic:'💹→👔'},
-{t:'info',from:'revenue',to:'ota',txt:'端午周四起提价 15%',ic:'💹→📱'},
-{t:'alert',from:'gm',to:'mkt',txt:'暴雨预警 启动雨夜应急',ic:'👔→📢'},
-{t:'flow',from:'mkt',to:'客户',txt:'"雨夜安心住"活动上线',ic:'📢→☔'},
-{t:'ok',from:'mkt',to:'客户',txt:'雨夜活动成交17间',ic:'📢→☔'},
-{t:'flow',from:'mkt',to:'front-desk',txt:'23位生日会员触达完成',ic:'📢→🏪'},
-{t:'info',from:'mkt',to:'housekeeper',txt:'VIP张总生日蛋糕备房',ic:'🎂→🏠'},
-{t:'flow',from:'mkt',to:'客户',txt:'沉睡会员唤醒券 x12',ic:'📢→👥'},
-{t:'ok',from:'mkt',to:'客户',txt:'朋友圈投放曝光18.6k',ic:'📢→👥'},
-{t:'flow',from:'mkt',to:'concierge',txt:'营销标签回传画像',ic:'📢→🧠'},
-{t:'flow',from:'gm',to:'报表',txt:'昨日经营日报生成',ic:'👔→📊'},
-{t:'alert',from:'gm',to:'eng',txt:'下浩里店能耗+18% 排查',ic:'👔→🔧'},
-{t:'ok',from:'eng',to:'gm',txt:'能耗异常定位 控制阀故障',ic:'🔧→👔'},
-{t:'flow',from:'gm',to:'quality',txt:'投诉响应时效 3.2分钟',ic:'👔→✅'},
-{t:'info',from:'quality',to:'gm',txt:'大堂巡检 92/100',ic:'✅→👔'},
-{t:'flow',from:'quality',to:'mkt',txt:'早餐整改计划已下发',ic:'✅→📢'},
-{t:'flow',from:'quality',to:'front-desk',txt:'新员工培训进度78%',ic:'✅→🏪'},
+{t:'info',from:'online-cs',to:'front-desk',txt:'微信咨询：停车多少钱',ic:'💬→🏪'},
+{t:'ok',from:'front-desk',to:'online-cs',txt:'住店免费 外来¥5/h',ic:'🏪→💬'},
+{t:'info',from:'IoT',to:'front-desk',txt:'📞 2201：早餐几点开始',ic:'☎→🏪'},
+{t:'ok',from:'front-desk',to:'IoT',txt:'06:30-10:30 2F西餐厅',ic:'🏪→🍳'},
+{t:'alert',from:'IoT',to:'quality',txt:'大堂滞留访客45分钟',ic:'📹→✅'},
+{t:'ok',from:'quality',to:'front-desk',txt:'确认是等候客人 放行',ic:'✅→🏪'},
+{t:'info',from:'IoT',to:'front-desk',txt:'📞 0502：设置06:30叫醒',ic:'☎→🏪'},
+{t:'flow',from:'supply',to:'housekeeper',txt:'800套洗漱包到货入库',ic:'📦→🏠'},
+{t:'info',from:'concierge',to:'mkt',txt:'新画像标签 x12 已同步',ic:'🧠→📢'},
 {t:'ok',from:'finance',to:'gm',txt:'携程T+1对账 ¥45,230',ic:'🛡→👔'},
-{t:'ok',from:'finance',to:'gm',txt:'美团对账一致 ¥28,420',ic:'🛡→👔'},
-{t:'alert',from:'finance',to:'eng',txt:'能耗成本异常 ¥4,200',ic:'🛡→🔧'},
-{t:'info',from:'POS',to:'finance',txt:'下浩里餐厅午餐 ¥5,680',ic:'🍳→🛡'},
-{t:'flow',from:'finance',to:'supply',txt:'供应商A家付款 ¥12,600',ic:'🛡→📦'},
-{t:'ok',from:'finance',to:'报表',txt:'应收账款周报已推送',ic:'🛡→📊'},
-{t:'flow',from:'supply',to:'housekeeper',txt:'800套洗漱包采购下单',ic:'📦→🏠'},
-{t:'alert',from:'supply',to:'housekeeper',txt:'矿泉水剩4天库存 补货',ic:'📦→🏠'},
-{t:'info',from:'supply',to:'finance',txt:'C家供应商降级为备选',ic:'📦→🛡'},
-{t:'flow',from:'supply',to:'POS',txt:'生鲜D家切换主供',ic:'📦→🍳'},
-{t:'ok',from:'front-desk',to:'企微',txt:'夜审完成 差异¥0 218笔',ic:'🏪→💬'},
-{t:'info',from:'front-desk',to:'企微',txt:'VIP李总接机安排15:30',ic:'✈→💬'},
-{t:'flow',from:'concierge',to:'mkt',txt:'VIP画像推送个性化权益',ic:'🧠→📢'},
-{t:'flow',from:'housekeeper',to:'quality',txt:'遗留物品登记 #LS-0428',ic:'🏠→✅'},
-{t:'ok',from:'housekeeper',to:'front-desk',txt:'群体入住12间备房完成',ic:'🏠→🏪'},
-{t:'info',from:'IoT',to:'housekeeper',txt:'📞 1208房来电：房里没有茶包',ic:'☎→🏠'},
-{t:'ok',from:'housekeeper',to:'IoT',txt:'2分钟内送达菊花茶+红茶各2包',ic:'🏠→🛎'},
-{t:'info',from:'IoT',to:'housekeeper',txt:'📞 0906来电：枕头太软要硬一些',ic:'☎→🏠'},
-{t:'ok',from:'housekeeper',to:'concierge',txt:'已换硬枕 画像更新"偏硬枕"',ic:'🏠→🧠'},
-{t:'info',from:'IoT',to:'front-desk',txt:'📞 1506来电：WiFi连不上',ic:'☎→🏪'},
-{t:'ok',from:'front-desk',to:'eng',txt:'指导连SU-HOTEL-5G 密码入住日期',ic:'🏪→🔧'},
-{t:'info',from:'IoT',to:'housekeeper',txt:'📞 2108来电：空调有异响',ic:'☎→🏠'},
-{t:'alert',from:'housekeeper',to:'eng',txt:'工单#MT-2901 空调异响排查',ic:'🏠→🔧'},
-{t:'info',from:'IoT',to:'housekeeper',txt:'📞 0815来电：卫生间水压小',ic:'☎→🏠'},
-{t:'alert',from:'housekeeper',to:'eng',txt:'6F水压异常 工程排查',ic:'🏠→🔧'},
-{t:'info',from:'IoT',to:'housekeeper',txt:'📞 1606来电：要多一床被子',ic:'☎→🏠'},
-{t:'ok',from:'housekeeper',to:'IoT',txt:'5分钟内送达加厚被子',ic:'🏠→🛎'},
-{t:'info',from:'IoT',to:'front-desk',txt:'📞 0612来电：需要打印行程单',ic:'☎→🏪'},
-{t:'ok',from:'front-desk',to:'IoT',txt:'1F商务中心已备打印',ic:'🏪→🛎'},
-{t:'info',from:'IoT',to:'housekeeper',txt:'📞 2015来电：拖鞋不够大',ic:'☎→🏠'},
-{t:'ok',from:'housekeeper',to:'IoT',txt:'已送42码加大拖鞋',ic:'🏠→🛎'},
-{t:'info',from:'IoT',to:'housekeeper',txt:'📞 1008来电：没有牙刷牙膏',ic:'☎→🏠'},
-{t:'ok',from:'housekeeper',to:'concierge',txt:'布草间遗漏 备注环保客',ic:'🏠→🧠'},
-{t:'info',from:'IoT',to:'front-desk',txt:'📞 1318来电：周边有推荐餐厅吗',ic:'☎→🏪'},
-{t:'flow',from:'front-desk',to:'concierge',txt:'推送火锅/小面/江边 3店单',ic:'🏪→🧠'},
-{t:'info',from:'IoT',to:'front-desk',txt:'📞 0502来电：退房前叫醒服务',ic:'☎→🏪'},
-{t:'ok',from:'front-desk',to:'IoT',txt:'设置06:30叫醒+接机提醒',ic:'🏪→⏰'},
-{t:'info',from:'online-cs',to:'front-desk',txt:'微信咨询：下午可以提前入住吗',ic:'💬→🏪'},
-{t:'ok',from:'front-desk',to:'online-cs',txt:'已安排12:30免费提前入住',ic:'🏪→💬'},
-{t:'info',from:'online-cs',to:'front-desk',txt:'电话咨询：儿童需要加床吗',ic:'☎→🏪'},
-{t:'ok',from:'front-desk',to:'online-cs',txt:'12岁以下免费 13+需加¥120',ic:'🏪→💬'},
-{t:'info',from:'online-cs',to:'front-desk',txt:'电话咨询：停车场什么价格',ic:'☎→🏪'},
-{t:'ok',from:'front-desk',to:'online-cs',txt:'住店免停 外来¥5/小时',ic:'🏪→💬'},
-{t:'info',from:'online-cs',to:'revenue',txt:'电话咨询：端午三晚连住优惠',ic:'☎→💹'},
-{t:'flow',from:'revenue',to:'online-cs',txt:'3晚8.5折+欢迎果盘',ic:'💹→💬'},
-{t:'info',from:'online-cs',to:'front-desk',txt:'电话咨询：带宠物可以入住吗',ic:'☎→🏪'},
-{t:'ok',from:'front-desk',to:'online-cs',txt:'南滨路1F-3F可入 需押金¥300',ic:'🏪→💬'},
-{t:'alert',from:'IoT',to:'front-desk',txt:'📞 1809投诉：隔壁太吵',ic:'☎→🏪'},
-{t:'ok',from:'front-desk',to:'quality',txt:'已沟通协调+小零食安抚',ic:'🏪→✅'},
-{t:'info',from:'IoT',to:'concierge',txt:'📞 VIP李总：下次还要1208房',ic:'☎→🧠'},
-{t:'ok',from:'concierge',to:'PMS',txt:'已锁定1208为李总专属',ic:'🧠→📥'},
-{t:'info',from:'IoT',to:'front-desk',txt:'📞 0102来电：行李帮忙送到前台',ic:'☎→🏪'},
-{t:'ok',from:'front-desk',to:'IoT',txt:'行李员3分钟到达取件',ic:'🏪→🛎'},
-{t:'alert',from:'IoT',to:'housekeeper',txt:'📞 1712来电：拉开窗帘发现漏水',ic:'☎→🏠'},
-{t:'alert',from:'housekeeper',to:'eng',txt:'楼上渗水 紧急换房+工单',ic:'🏠→🔧'},
-{t:'ok',from:'front-desk',to:'quality',txt:'1712已换1718 赠送¥200券',ic:'🏪→✅'},
-{t:'info',from:'IoT',to:'front-desk',txt:'📞 2201来电：问早餐几点开始',ic:'☎→🏪'},
-{t:'ok',from:'front-desk',to:'IoT',txt:'早餐06:30-10:30在2F西餐厅',ic:'🏪→🍳'},
-{t:'info',from:'IoT',to:'front-desk',txt:'📞 0304来电：怎么开电视没反应',ic:'☎→🏪'},
-{t:'ok',from:'front-desk',to:'IoT',txt:'远程重启IPTV 1分钟恢复',ic:'🏪→📺'},
-{t:'info',from:'IoT',to:'front-desk',txt:'📞 1101来电：要借充电宝',ic:'☎→🏪'},
-{t:'ok',from:'front-desk',to:'IoT',txt:'前台已送3A快充线+充电宝',ic:'🏪→🔋'},
-{t:'info',from:'IoT',to:'housekeeper',txt:'📞 0418来电：马桶冲不下去',ic:'☎→🏠'},
-{t:'alert',from:'housekeeper',to:'eng',txt:'工单#MT-2912 马桶堵塞',ic:'🏠→🔧'},
-{t:'info',from:'IoT',to:'front-desk',txt:'📞 1205来电：续住一晚',ic:'☎→🏪'},
-{t:'ok',from:'front-desk',to:'revenue',txt:'续订¥589 系统已更新',ic:'🏪→💹'}
+{t:'info',from:'PMS',to:'front-desk',txt:'续住延迟退房至14:00',ic:'⏰→🏪'},
+{t:'flow',from:'housekeeper',to:'supply',txt:'布草送洗批次#LN-221',ic:'🧺→📦'},
+{t:'info',from:'mkt',to:'客户',txt:'朋友圈广告曝光+320',ic:'📢→👥'}
 ];
 var CMD_KPIS=[{k:'今日调度',v:2847,unit:'',ic:'📋',d:'+12.3%',spark:[40,55,62,70,78,82,88,95]},{k:'当前并发',v:186,unit:'',ic:'⚡',d:'task/h',spark:[70,65,80,75,88,92,85,90]},{k:'平均响应',v:'1.2',unit:'s',ic:'⏱',d:'-0.3s',spark:[55,50,45,48,42,40,38,36]},{k:'成功率',v:'98.7',unit:'%',ic:'✅',d:'+0.3%',spark:[88,90,92,94,95,96,97,98]},{k:'协作频次',v:756,unit:'',ic:'🔗',d:'+18%',spark:[50,55,60,68,72,78,82,85]}];
 var CMD_TODAY={入住:87,退房:52,咨询:567,告警:8,维修:14,订单:756,会员:342};
@@ -324,15 +438,18 @@ function renderCmdHeatmap(){var g=document.getElementById('cmd-heatmap');if(!g)r
 function cmdSvgEl(tag,attrs){var el=document.createElementNS('http://www.w3.org/2000/svg',tag);if(attrs)Object.keys(attrs).forEach(function(k){el.setAttribute(k,attrs[k]);});return el;}
 function cmdClearChildren(el){while(el&&el.firstChild)el.removeChild(el.firstChild);}
 function buildCmdFlow(){var svg=document.getElementById('cmd-svg');if(!svg)return;var eg=document.getElementById('cmd-edges'),ng=document.getElementById('cmd-nodes'),sg=document.getElementById('cmd-sources');cmdClearChildren(eg);cmdClearChildren(ng);cmdClearChildren(sg);function mkPath(id,d){var p=cmdSvgEl('path',{'class':'cmd-edge',id:id,d:d,'marker-end':'url(#cmd-arrow)'});eg.appendChild(p);}CMD_SRC_EDGES.forEach(function(e){var s=CMD_SRCS.find(function(x){return x.id===e[0];}),t=CMD_POS[e[1]];if(s&&t)mkPath('edge-'+e[0]+'-'+e[1],'M'+s.x+','+s.y+' L'+t.x+','+t.y);});CMD_EDGES.forEach(function(e){var s=CMD_POS[e[0]],t=CMD_POS[e[1]];if(!s||!t)return;var mx=(s.x+t.x)/2,my=(s.y+t.y)/2,dx=t.x-s.x,dy=t.y-s.y,d=Math.sqrt(dx*dx+dy*dy)||1,cx=mx-dy/d*20,cy=my+dx/d*20;mkPath('edge-'+e[0]+'-'+e[1],'M'+s.x+','+s.y+' Q'+cx+','+cy+' '+t.x+','+t.y);});CMD_OUT_EDGES.forEach(function(e){var s=CMD_POS[e[0]],t=CMD_OUT.find(function(x){return x.id===e[1];});if(s&&t)mkPath('edge-'+e[0]+'-'+e[1],'M'+s.x+','+s.y+' L'+t.x+','+t.y);});function mkSrc(s){var g=cmdSvgEl('g'),r=cmdSvgEl('rect',{'class':'cmd-source',x:s.x-24,y:s.y-14,width:48,height:28,rx:4}),t=cmdSvgEl('text',{'class':'cmd-source-text',x:s.x,y:s.y+4});t.textContent=s.id;g.appendChild(r);g.appendChild(t);sg.appendChild(g);}CMD_SRCS.forEach(mkSrc);CMD_OUT.forEach(mkSrc);A.forEach(function(a){var p=CMD_POS[a.id];if(!p)return;var g=cmdSvgEl('g',{'class':'cmd-node cmd-node-cat-'+a.category,'data-id':a.id,transform:'translate('+p.x+','+p.y+')'});g.appendChild(cmdSvgEl('circle',{'class':'cmd-node-ring',r:22}));g.appendChild(cmdSvgEl('circle',{'class':'cmd-node-bg',r:22}));var ti=cmdSvgEl('text',{'class':'cmd-node-icon',x:0,y:0});ti.textContent=a.icon;g.appendChild(ti);var tl=cmdSvgEl('text',{'class':'cmd-node-label',x:0,y:38});tl.textContent=a.name.replace('Agent','');g.appendChild(tl);ng.appendChild(g);});}
-function emitCmdParticle(fromId,toId,type){var s=CMD_POS[fromId]||CMD_SRCS.find(function(x){return x.id===fromId;})||CMD_OUT.find(function(x){return x.id===fromId;}),t=CMD_POS[toId]||CMD_SRCS.find(function(x){return x.id===toId;})||CMD_OUT.find(function(x){return x.id===toId;});if(!s||!t)return;var colors={flow:'#c8dc7a',alert:'#e08080',ok:'#8ebc3a',info:'#d8a87a'},c=colors[type]||'#c8dc7a',pg=document.getElementById('cmd-particles');if(!pg)return;var edgeId='edge-'+fromId+'-'+toId,edge=document.getElementById(edgeId),pathD=edge?edge.getAttribute('d'):('M'+s.x+','+s.y+' L'+t.x+','+t.y);var p=cmdSvgEl('circle',{r:4.5,fill:c,'class':'cmd-particle'});p.style.color=c;var m=cmdSvgEl('animateMotion',{dur:'1.3s',repeatCount:'1',fill:'remove',path:pathD,rotate:'auto'});p.appendChild(m);pg.appendChild(p);try{m.beginElement&&m.beginElement();}catch(e){}setTimeout(function(){if(p.parentNode)p.parentNode.removeChild(p);},1400);if(edge){edge.style.stroke=c;edge.style.strokeWidth='2';edge.style.filter='drop-shadow(0 0 5px '+c+')';setTimeout(function(){edge.style.stroke='';edge.style.strokeWidth='';edge.style.filter='';},1500);}var node=document.querySelector('.cmd-node[data-id="'+toId+'"] .cmd-node-bg');if(node){node.style.stroke=c;node.style.strokeWidth='2.5';setTimeout(function(){node.style.stroke='';node.style.strokeWidth='';},1500);}}
-function pushCmdStreamItem(evt){var list=document.getElementById('cmd-stream-list');if(!list)return;var now=new Date(),h=String(now.getHours()).padStart(2,'0'),m=String(now.getMinutes()).padStart(2,'0'),s=String(now.getSeconds()).padStart(2,'0'),tt=h+':'+m+':'+s,typLbl={flow:'流转',alert:'告警',ok:'完成',info:'同步'}[evt.t]||'事件',item=document.createElement('div');item.className='cmd-stream-item';item.innerHTML='<span class="cmd-stream-time">'+tt+'</span><span class="cmd-stream-type t-'+evt.t+'">'+typLbl+'</span><span class="cmd-stream-text">'+evt.ic+' '+evt.txt+'</span>';list.insertBefore(item,list.firstChild);while(list.children.length>14)list.removeChild(list.lastChild);}
+function emitCmdParticle(fromId,toId,type){var s=CMD_POS[fromId]||CMD_SRCS.find(function(x){return x.id===fromId;})||CMD_OUT.find(function(x){return x.id===fromId;}),t=CMD_POS[toId]||CMD_SRCS.find(function(x){return x.id===toId;})||CMD_OUT.find(function(x){return x.id===toId;});if(!s||!t)return;var colors={trigger:'#e5c56a',execute:'#8ebc3a',notify:'#7abcc8',record:'#a8a0c8',sync:'#c8dc7a',flow:'#c8dc7a',alert:'#e08080',ok:'#8ebc3a',info:'#d8a87a'},c=colors[type]||'#c8dc7a',pg=document.getElementById('cmd-particles');if(!pg)return;var edgeId='edge-'+fromId+'-'+toId,edge=document.getElementById(edgeId),pathD=edge?edge.getAttribute('d'):('M'+s.x+','+s.y+' L'+t.x+','+t.y);var p=cmdSvgEl('circle',{r:4.8,fill:c,'class':'cmd-particle'});p.style.color=c;var m=cmdSvgEl('animateMotion',{dur:'1.3s',repeatCount:'1',fill:'remove',path:pathD,rotate:'auto'});p.appendChild(m);pg.appendChild(p);try{m.beginElement&&m.beginElement();}catch(e){}setTimeout(function(){if(p.parentNode)p.parentNode.removeChild(p);},1400);if(edge){edge.style.stroke=c;edge.style.strokeWidth='2';edge.style.filter='drop-shadow(0 0 5px '+c+')';setTimeout(function(){edge.style.stroke='';edge.style.strokeWidth='';edge.style.filter='';},1500);}var node=document.querySelector('.cmd-node[data-id="'+toId+'"] .cmd-node-bg');if(node){node.style.stroke=c;node.style.strokeWidth='2.5';setTimeout(function(){node.style.stroke='';node.style.strokeWidth='';},1500);}}
+function pushCmdStreamItem(evt,chained){var list=document.getElementById('cmd-stream-list');if(!list)return;var now=new Date(),h=String(now.getHours()).padStart(2,'0'),m=String(now.getMinutes()).padStart(2,'0'),s=String(now.getSeconds()).padStart(2,'0'),tt=h+':'+m+':'+s,typLbl={trigger:'触发',execute:'执行',notify:'通知',record:'记录',sync:'同步',flow:'流转',alert:'告警',ok:'完成',info:'事件'}[evt.t]||'事件',item=document.createElement('div');item.className='cmd-stream-item'+(chained?' chained':'');item.innerHTML='<span class="cmd-stream-time">'+tt+'</span><span class="cmd-stream-type t-'+evt.t+'">'+typLbl+'</span><span class="cmd-stream-text">'+evt.ic+' '+evt.txt+'</span>';list.insertBefore(item,list.firstChild);while(list.children.length>16)list.removeChild(list.lastChild);}
+function pushCmdSceneBanner(scene){var list=document.getElementById('cmd-stream-list');if(!list)return;var b=document.createElement('div');b.className='cmd-scene-banner';b.innerHTML='▣ 场景 · '+scene;list.insertBefore(b,list.firstChild);}
+function playCmdChain(chain){if(!chain||!chain.steps)return;pushCmdSceneBanner(chain.scene);chain.steps.forEach(function(step,idx){setTimeout(function(){emitCmdParticle(step.from,step.to,step.t);pushCmdStreamItem(step,idx>0);bumpCmdToday(step);CMD_KPIS[0].v=CMD_KPIS[0].v+1;var v=document.querySelector('.cmd-kpi-card:nth-child(1) .k-val');if(v)v.firstChild.nodeValue=CMD_KPIS[0].v.toLocaleString();},idx*750);});}
+function fireCmdAmbient(){var e=CMD_AMBIENT[Math.floor(Math.random()*CMD_AMBIENT.length)];emitCmdParticle(e.from,e.to,e.t);pushCmdStreamItem(e);bumpCmdToday(e);}
+function fireCmdEvent(){var chain=CMD_CHAINS[Math.floor(Math.random()*CMD_CHAINS.length)];playCmdChain(chain);CMD_KPIS[1].v=160+Math.floor(Math.random()*60);var v2=document.querySelector('.cmd-kpi-card:nth-child(2) .k-val');if(v2)v2.firstChild.nodeValue=CMD_KPIS[1].v;var amb=Math.max(2,Math.floor((chain.steps.length*750)/900));for(var i=0;i<amb;i++){setTimeout(fireCmdAmbient,400+i*900);}}
+function startCmdFlow(){if(cmdTimer)return;cmdTickCounter=0;fireCmdEvent();cmdTimer=setInterval(fireCmdEvent,9000);}
 function bumpCmdToday(evt){if(evt.from==='PMS'||evt.txt.indexOf('入住')>=0)CMD_TODAY.入住++;else if(evt.txt.indexOf('退房')>=0)CMD_TODAY.退房++;else if(evt.from==='online-cs'||evt.txt.indexOf('咨询')>=0)CMD_TODAY.咨询++;else if(evt.t==='alert')CMD_TODAY.告警++;else if(evt.txt.indexOf('维修')>=0||evt.txt.indexOf('工单')>=0)CMD_TODAY.维修++;else if(evt.from==='ota'||evt.txt.indexOf('订单')>=0)CMD_TODAY.订单++;else if(evt.txt.indexOf('会员')>=0||evt.txt.indexOf('生日')>=0)CMD_TODAY.会员++;var bar=document.getElementById('cmd-today');if(!bar)return;bar.innerHTML=Object.keys(CMD_TODAY).map(function(k){return'<div class="cmd-today-item"><span class="cmd-today-k">'+k+'</span><span class="cmd-today-v">'+CMD_TODAY[k]+'</span></div>';}).join('');}
 var cmdTimer=null,cmdClockTimer=null,cmdTickCounter=0;
 function startCmdClock(){function tick(){var n=new Date(),h=String(n.getHours()).padStart(2,'0'),m=String(n.getMinutes()).padStart(2,'0'),s=String(n.getSeconds()).padStart(2,'0'),el=document.getElementById('cmd-clock');if(el)el.textContent=h+':'+m+':'+s;}tick();cmdClockTimer=setInterval(tick,1000);}
-function fireCmdEvent(){var e=CMD_EVENTS[Math.floor(Math.random()*CMD_EVENTS.length)];emitCmdParticle(e.from,e.to,e.t);pushCmdStreamItem(e);bumpCmdToday(e);CMD_KPIS[0].v=CMD_KPIS[0].v+Math.floor(Math.random()*2)+1;var v=document.querySelector('.cmd-kpi-card:nth-child(1) .k-val');if(v)v.firstChild.nodeValue=CMD_KPIS[0].v.toLocaleString();CMD_KPIS[1].v=160+Math.floor(Math.random()*60);var v2=document.querySelector('.cmd-kpi-card:nth-child(2) .k-val');if(v2)v2.firstChild.nodeValue=CMD_KPIS[1].v;cmdTickCounter++;if(cmdTickCounter%3===0){var e2=CMD_EVENTS[Math.floor(Math.random()*CMD_EVENTS.length)];setTimeout(function(){emitCmdParticle(e2.from,e2.to,e2.t);pushCmdStreamItem(e2);bumpCmdToday(e2);},180);}}
-function startCmdFlow(){if(cmdTimer)return;cmdTickCounter=0;fireCmdEvent();cmdTimer=setInterval(fireCmdEvent,850);}
 function stopCmdFlow(){if(cmdTimer){clearInterval(cmdTimer);cmdTimer=null;}}
-function initCmd(){renderCmdKPI();renderCmdHeatmap();requestAnimationFrame(function(){buildCmdFlow();startCmdClock();var bar=document.getElementById('cmd-today');if(bar)bar.innerHTML=Object.keys(CMD_TODAY).map(function(k){return'<div class="cmd-today-item"><span class="cmd-today-k">'+k+'</span><span class="cmd-today-v">'+CMD_TODAY[k]+'</span></div>';}).join('');for(var i=0;i<10;i++){var e=CMD_EVENTS[Math.floor(Math.random()*CMD_EVENTS.length)];pushCmdStreamItem(e);}startCmdFlow();});}
+function initCmd(){renderCmdKPI();renderCmdHeatmap();requestAnimationFrame(function(){buildCmdFlow();startCmdClock();var bar=document.getElementById('cmd-today');if(bar)bar.innerHTML=Object.keys(CMD_TODAY).map(function(k){return'<div class="cmd-today-item"><span class="cmd-today-k">'+k+'</span><span class="cmd-today-v">'+CMD_TODAY[k]+'</span></div>';}).join('');for(var i=0;i<8;i++){var e=CMD_AMBIENT[Math.floor(Math.random()*CMD_AMBIENT.length)];pushCmdStreamItem(e);}startCmdFlow();});}
 function switchView(id,nav){document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});document.getElementById('view-'+id).classList.add('active');if(nav)nav.classList.add('active');var i=VT[id]||{};document.getElementById('topbar-title').textContent=i.t||'';document.getElementById('topbar-breadcrumb').textContent=i.b||'';if(id==='command'){initCmd();}else{stopCmdFlow();}}
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('collapsed');}
 function renderCategories(){document.getElementById('category-grid').innerHTML=C.map(c=>{const a=A.filter(x=>x.category===c.key);return'<div class="category-card '+c.cls+'"><div class="category-header"><div class="category-icon">'+c.icon+'</div><div><div class="category-name">'+c.name+'</div><div class="category-desc">'+c.sub+'</div></div></div><div class="agent-mini-list">'+a.map(x=>'<div class="agent-mini-item" onclick="selectAgent(\''+x.id+'\')"><div class="agent-mini-left"><span class="agent-mini-dot '+(x.status==='running'?'online':x.status==='idle'?'idle':'offline')+'"></span><span>'+x.icon+' '+x.name.replace('Agent','')+'</span></div><span class="agent-mini-tasks">'+x.tasks+'</span></div>').join('')+'</div></div>';}).join('');}
@@ -361,7 +478,7 @@ function selectWorkflow(i,b){curWF=i;document.querySelectorAll('.workflow-templa
 function renderOrch(){var wf=WF[curWF]||WF[0],canvas=document.getElementById('orch-canvas'),svg=document.getElementById('orch-svg');canvas.querySelectorAll('.orch-node').forEach(function(n){n.remove();});var s='';wf.edges.forEach(function(e){var fr=wf.nodes.find(function(n){return n.id===e.f;}),to=wf.nodes.find(function(n){return n.id===e.t;});if(fr&&to)s+='<line x1="'+(fr.x+65)+'" y1="'+(fr.y+22)+'" x2="'+(to.x+65)+'" y2="'+(to.y+22)+'" stroke="rgba(139,154,70,0.15)" stroke-width="2"/><line x1="'+(fr.x+65)+'" y1="'+(fr.y+22)+'" x2="'+(to.x+65)+'" y2="'+(to.y+22)+'" stroke="rgba(139,154,70,0.5)" stroke-width="2" stroke-dasharray="8 4" style="animation:flow-dash 1s linear infinite"/>';});svg.innerHTML=s;wf.nodes.forEach(function(n){var d=document.createElement('div');d.className='orch-node'+(n.status==='running'?' active-node':'');d.style.cssText='left:'+n.x+'px;top:'+n.y+'px';d.innerHTML='<div class="orch-node-icon" style="background:'+n.bg+'">'+n.icon+'</div><div><div class="orch-node-name">'+n.name+'</div><div class="orch-node-status">'+(n.status==='done'?'✅完成':n.status==='running'?'⚡执行中':'⏳等待')+'</div></div><div class="orch-node-pulse '+n.status+'"></div>';canvas.appendChild(d);});document.getElementById('orch-step-list').innerHTML=wf.steps.map(function(st,i){return'<div class="orch-step"><div class="orch-step-line"><div class="orch-step-num '+st.s+'">'+(st.s==='completed'?'✓':(i+1))+'</div>'+(i<wf.steps.length-1?'<div class="orch-step-connector '+st.s+'"></div>':'')+'</div><div class="orch-step-content"><div class="orch-step-name">'+st.n+'</div><div class="orch-step-agent">'+st.a+'</div><div class="orch-step-time">'+st.t+'</div></div></div>';}).join('');}
 function renderActiveWF(){document.getElementById('orch-workflows-list').innerHTML=AWF.map(function(w,i){return'<div class="orch-wf-item'+(i===0?' active':'')+'"><div class="orch-wf-status" style="background:'+w.c+';'+(w.s==='running'?'animation:breathe 2.5s ease-in-out infinite':'')+'"></div><div style="flex:1;min-width:0"><div class="orch-wf-name">'+w.name+'</div><div class="orch-wf-agents">'+w.agents+'</div></div><div class="orch-wf-progress"><div class="progress-bar"><div class="progress-bar-fill" style="width:'+w.p+'%;background:'+w.c+'"></div></div></div></div>';}).join('');}
 function updateClock(){var n=new Date(),p=function(x){return String(x).padStart(2,'0');};document.getElementById('topbar-time').textContent=n.getFullYear()+'-'+p(n.getMonth()+1)+'-'+p(n.getDate())+' '+p(n.getHours())+':'+p(n.getMinutes())+':'+p(n.getSeconds());}
-renderCategories();renderActivities();renderTrend();renderGrid();renderPerf();renderHistory();renderLogs();renderChatList();renderChatSidePanel();renderChat();renderBoardCharts();renderOrch();renderActiveWF();updateClock();setInterval(updateClock,1000);
+renderCategories();renderActivities();renderTrend();renderGrid();renderPerf();renderHistory();renderLogs();renderChatList();renderChatSidePanel();renderChat();renderBoardCharts();renderOrch();renderActiveWF();updateClock();setInterval(updateClock,1000);if(location.hash==='#command'){setTimeout(function(){switchView('command',document.querySelector('[data-view=command]'));},100);}
 function checkMobile(){var b=document.getElementById('mobile-menu-btn');if(window.innerWidth<=768){b.style.display='flex';}else{b.style.display='none';document.getElementById('sidebar').classList.remove('mobile-open');}}
 checkMobile();window.addEventListener('resize',checkMobile);
 document.querySelector('.view-container').addEventListener('click',function(){if(window.innerWidth<=768)document.getElementById('sidebar').classList.remove('mobile-open');});
