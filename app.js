@@ -858,9 +858,9 @@ function renderNotifications() {
 const AGENT_EVENTS = {
   'AGT-001': [ // 前台小星
     { id:'E-001', phases:[
-      {type:'trigger',icon:'⚡',label:'事件触发',detail:'PMS推送: 张先生到达前台，预订号R2856',source:'PMS系统'},
+      {type:'trigger',icon:'⚡',label:'事件触发',detail:'捷信达PMS推送: 张先生到达前台，预订号R2856',source:'捷信达PMS'},
       {type:'reasoning',icon:'🧠',label:'模型推理',model:'Qwen-Max',latency:'1.2s',input:'客人信息 + 预订详情 + 历史偏好档案',thinking:'识别为VIP金卡会员(历史入住12次)，偏好高楼层海景房，上次入住1208房评价满分。建议分配同楼层同朝向房间，触发VIP入住流程。',confidence:96.2,decision:'执行VIP入住流程 + 优先分配1208房'},
-      {type:'action',icon:'⚙️',label:'执行动作',steps:[{name:'调用PMS: 分配1208房',status:'done'},{name:'生成电子房卡指令',status:'done'},{name:'通知客房管家Agent备房',status:'done'},{name:'同步宾客画像Agent更新偏好',status:'done'}]},
+      {type:'action',icon:'⚙️',label:'执行动作',steps:[{name:'调用捷信达PMS: 分配1208房',status:'done'},{name:'生成电子房卡指令',status:'done'},{name:'通知客房管家Agent备房',status:'done'},{name:'同步宾客画像Agent更新偏好',status:'done'}]},
       {type:'result',icon:'✅',label:'完成',summary:'VIP入住登记完成，耗时2.1s',notify:'已通知客房管家、宾客画像、收益管理师3个协作Agent'}
     ]},
     { id:'E-002', phases:[
