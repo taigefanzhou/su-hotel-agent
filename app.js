@@ -947,8 +947,8 @@ const AGENT_EVENTS = {
   'AGT-009': [ // 培训导师
     { id:'E-080', phases:[
       {type:'trigger',icon:'⚡',label:'事件触发',detail:'HR系统: 新员工小刘入职第3天，触发培训跟踪',source:'HR系统'},
-      {type:'reasoning',icon:'🧠',label:'模型推理',model:'Qwen-Max',latency:'1.6s',input:'培训进度 + 考核成绩 + 岗位要求(前台)',thinking:'小刘前台岗位培训进度：理论课完成80%，实操课完成40%。昨日模拟入住考核78分(及格线80)，主要扣分项：房卡操作不熟练、会员等级识别慢。建议今日重点加强实操训练。',confidence:92.5,decision:'推送针对性练习 + 安排老带新实操'},
-      {type:'action',icon:'⚙️',label:'执行动作',steps:[{name:'推送房卡操作视频教程',status:'done'},{name:'生成会员等级速查卡',status:'done'},{name:'安排与前台小星Agent模拟对练',status:'done'}]},
+      {type:'reasoning',icon:'🧠',label:'模型推理',model:'Qwen-Max',latency:'1.6s',input:'培训进度 + 考核成绩 + 岗位要求(前台)',thinking:'小刘前台岗位培训进度：理论课完成80%，实操课完成40%。昨日入住实操考核78分(及格线80)，主要扣分项：房卡操作不熟练、会员等级识别慢。建议今日重点加强实操训练。',confidence:92.5,decision:'推送针对性练习 + 安排老带新实操'},
+      {type:'action',icon:'⚙️',label:'执行动作',steps:[{name:'推送房卡操作视频教程',status:'done'},{name:'生成会员等级速查卡',status:'done'},{name:'安排与前台小星Agent情景对练',status:'done'}]},
       {type:'result',icon:'✅',label:'完成',summary:'培训计划已调整，安排今日实操加强',notify:'已通知前台主管和HR'}
     ]}
   ],
